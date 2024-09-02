@@ -8,7 +8,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
+
+import java.util.Random;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class FruitNinja extends ApplicationAdapter implements InputProcessor {
@@ -21,6 +25,9 @@ public class FruitNinja extends ApplicationAdapter implements InputProcessor {
     Texture ruby;
     BitmapFont font;
     FreeTypeFontGenerator fontGen;
+
+    Random random = new Random();
+    Array<Fruit> fruitArray = new Array<Fruit>();
 
     int lives = 4;
     int score = 0;
@@ -37,7 +44,7 @@ public class FruitNinja extends ApplicationAdapter implements InputProcessor {
         cherry = new Texture("cherry.png");
         ruby = new Texture("ruby.png");
         bill = new Texture("bill.png");
-
+        Fruit.radius = Math.max(Gdx.graphics.getHeight(), Gdx.graphics.getWidth()) / 20f;
 
         Gdx.input.setInputProcessor(this);
 
@@ -78,6 +85,20 @@ public class FruitNinja extends ApplicationAdapter implements InputProcessor {
         font.draw(batch,"Score: 0",30,40);
         font.draw(batch,"Cut to play", Gdx.graphics.getWidth()*0.5f, Gdx.graphics.getHeight()*0.5f);
         batch.end();
+    }
+
+    private void addItem() {
+        float pos = random.nextFloat() * Math.max(Gdx.graphics.getHeight(), Gdx.graphics.getWidth());
+        Fruit item = new Fruit(new Vector2(pos, pos), new Vector2(pos,pos));
+        float type = random.nextFloat();
+        if (type > 0.98) {
+            item.type = Fruit.Type.LIFE;
+        } else if (type > 0.88) {
+            item.type = Fruit.Type.EXTRA;
+        } else if (type > 0.78) {
+            item.type = Fruit.Type.ENEMY;
+        }
+        fruitArray.add(item);
     }
 
     @Override
