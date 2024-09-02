@@ -29,9 +29,16 @@ public class FruitNinja extends ApplicationAdapter implements InputProcessor {
     Random random = new Random();
     Array<Fruit> fruitArray = new Array<Fruit>();
 
+    //Scores & Lives
     int lives = 4;
     int score = 0;
 
+    //Generator Variables
+    float genCounter = 0;
+    private final float startGenSpeed = 1.1f;
+    float genSpeed = startGenSpeed;
+
+    //Time Control
     private double currentTime;
     private double gameoverTime = -1.0f;
 
@@ -71,7 +78,6 @@ public class FruitNinja extends ApplicationAdapter implements InputProcessor {
         System.out.println("deltaTime : " + deltaTime);
 
         currentTime = newTime;
-        addItem();
 
         if (lives <= 0 && gameoverTime ==0f) {
             // game over
@@ -80,6 +86,18 @@ public class FruitNinja extends ApplicationAdapter implements InputProcessor {
 
         if (lives > 0) {
             // game mode
+            genSpeed -= deltaTime * 0.015f;
+
+            System.out.println("genspeed: " + genSpeed);
+            System.out.println("gencounter: " + genCounter);
+
+            if(genCounter <= 0f) {
+                genCounter = genSpeed;
+                addItem();
+            } else {
+                genCounter -=deltaTime;
+            }
+
             for (int i = 0; i < lives; i++) {
                 batch.draw(apple,i*30f+20f, Gdx.graphics.getHeight()-25f,25f,25f);
             }
@@ -113,7 +131,7 @@ public class FruitNinja extends ApplicationAdapter implements InputProcessor {
 
     private void addItem() {
         float pos = random.nextFloat() * Math.max(Gdx.graphics.getHeight(), Gdx.graphics.getWidth());
-        Fruit item = new Fruit(new Vector2(pos, -Fruit.radius), new Vector2((Gdx.graphics.getWidth()*0.5f)*random.nextFloat(),Gdx.graphics.getHeight()*0.5f));
+        Fruit item = new Fruit(new Vector2(pos, -Fruit.radius), new Vector2((Gdx.graphics.getWidth() * 0.5f - pos)*(0.3f + (random.nextFloat() - 0.5f)),Gdx.graphics.getHeight()*0.5f));
         float type = random.nextFloat();
         if (type > 0.98) {
             item.type = Fruit.Type.LIFE;

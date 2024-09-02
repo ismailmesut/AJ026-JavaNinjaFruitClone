@@ -1,5 +1,6 @@
 package com.ismailmesutmujde.javaninjafruitclone;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.Vector;
@@ -28,10 +29,12 @@ public class Fruit {
     }
 
     public boolean outOfScreen() {
-        return (pos.y < -2f - radius);
+        return (pos.y < -2f * radius);
     }
 
     public void update(float dt) {
+        velocity.y -= dt * (Gdx.graphics.getHeight()*0.2f);
+        velocity.x -= dt * Math.signum(velocity.x)*5.f;
         pos.mulAdd(velocity, dt);
     }
 }
