@@ -30,7 +30,7 @@ public class FruitNinja extends ApplicationAdapter implements InputProcessor {
     Array<Fruit> fruitArray = new Array<Fruit>();
 
     //Scores & Lives
-    int lives = 4;
+    int lives = 0;
     int score = 0;
 
     //Generator Variables
@@ -124,8 +124,10 @@ public class FruitNinja extends ApplicationAdapter implements InputProcessor {
 
         }
 
-        font.draw(batch,"Score: 0",30,40);
-        font.draw(batch,"Cut to play", Gdx.graphics.getWidth()*0.5f, Gdx.graphics.getHeight()*0.5f);
+        font.draw(batch,"Score: "+ score,30,40);
+        if(lives <= 0) {
+            font.draw(batch,"Cut to play", Gdx.graphics.getWidth()*0.5f, Gdx.graphics.getHeight()*0.5f);
+        }
         batch.end();
     }
 
@@ -182,6 +184,50 @@ public class FruitNinja extends ApplicationAdapter implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        if (lives <= 0 && currentTime - gameoverTime > 2f) {
+            // menu mode
+            gameoverTime = 0f;
+            score = 0;
+            lives = 4;
+            genSpeed = startGenSpeed;
+            fruitArray.clear();
+        } else {
+            // game mode
+
+            Array<Fruit> toRemove = new Array<Fruit>();
+            Vector2 pos = new Vector2(screenX, Gdx.graphics.getHeight()-screenY);
+
+            int plusScore = 0;
+
+            for (Fruit f : fruitArray) {
+                System.out.println("distance: " + pos.dst2(f.pos));
+                System.out.println("distance: " + f.clicked(pos));
+                System.out.println("distance: " + Fruit.radius * Fruit.radius + 1);
+                if (f.clicked(pos)) {
+                    toRemove.add(f);
+
+                    switch (f.type) {
+                        case REGULAR:
+                            plusScore++;
+                            break;
+                        case EXTRA:
+                            plusScore+=2;
+                            break;
+                        case ENEMY:
+                            lives--;
+                            break;
+                        case LIFE:
+                            lives++;
+                            break;
+                    }
+                }
+            }
+            score += plusScore * plusScore;
+
+            for (Fruit f : toRemove) {
+                fruitArray.removeValue(f, true);
+            }
+        }
         return false;
     }
 
