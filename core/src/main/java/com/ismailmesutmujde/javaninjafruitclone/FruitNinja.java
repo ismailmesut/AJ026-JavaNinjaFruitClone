@@ -121,6 +121,31 @@ public class FruitNinja extends ApplicationAdapter implements InputProcessor {
                 }
             }
 
+            boolean holdlives = false;
+
+            Array<Fruit> toRemove = new Array<Fruit>();
+            for (Fruit fruit : fruitArray) {
+                if (fruit.outOfScreen()) {
+                    toRemove.add(fruit);
+
+                    if (fruit.living && fruit.type == Fruit.Type.REGULAR) {
+                        lives--;
+                        holdlives = true;
+                        break;
+                    }
+                }
+            }
+
+            if(holdlives) {
+                for (Fruit f : fruitArray) {
+                    f.living = false;
+                }
+            }
+
+            for(Fruit f : toRemove) {
+                fruitArray.removeValue(f, true);
+            }
+
 
         }
 
